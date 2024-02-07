@@ -6,11 +6,21 @@ public class Cow {
     final Long cowId;
     final String nickName;
     final Long parentCowId;
+    boolean alive;
+
+    public boolean isAlive() {
+        return alive;
+    }
+
+    public void setAlive(boolean alive) {
+        this.alive = alive;
+    }
 
     public Cow(Long cowId, String nickName, Long parentCowId) {
         this.cowId = cowId;
         this.nickName = nickName;
         this.parentCowId = parentCowId;
+        this.alive = true;
     }
 
     public Long getCowId() {
@@ -38,13 +48,8 @@ public class Cow {
         return Objects.hash(cowId, nickName, parentCowId);
     }
 
-    //todo fancy toString()
     @Override
     public String toString() {
-        return "Cow{" +
-                "cowId=" + cowId +
-                ", nickName='" + nickName + '\'' +
-                ", parentCowId=" + parentCowId +
-                '}';
+        return alive ? nickName: "X-X " + nickName;
     }
 }

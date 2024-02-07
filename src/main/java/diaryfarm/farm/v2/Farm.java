@@ -3,49 +3,69 @@ package diaryfarm.farm.v2;
 import diaryfarm.domain.Cow;
 
 public class Farm {
-    final MyLinkedList<Cow> allFarmCows;
-
+    final MyLinkedList<Cow> aliveCows;
+    final Tree<Cow> farmTree;
     final String name;
     private static Long COW_ID_SEQUENCE = 1L;
-    public Farm(MyLinkedList<Cow> allFarmCows, String name) {
-        this.allFarmCows = allFarmCows;
+    public Farm(Cow firstCow, String name) {
+        this.farmTree = new Tree<>(new TreeNode<>(firstCow));
+        MyLinkedList<Cow> cows = new MyLinkedList<>();
+        cows.insert(firstCow);
+        this.aliveCows = cows;
         this.name = name;
     }
 
     public static void main(String[] args) {
         Cow firstCow = new Cow(COW_ID_SEQUENCE++, "MotherOfAllCows", null);
-        MyLinkedList<Cow> cows = new MyLinkedList<>();
-        cows.insert(firstCow);
-
-        Farm farm2 = new Farm(cows, "MyFarmv2");
+        Farm farm2 = new Farm(firstCow, "MyFarmv2");
 
         Cow Nancy =  farm2.GiveBirth(firstCow.getCowId(), COW_ID_SEQUENCE++, "Nancy");
-        Cow secondCalf =  farm2.GiveBirth(firstCow.getCowId(), COW_ID_SEQUENCE++, "Moana");
-        System.out.println("First 2 calfs:");
-        farm2.allFarmCows.printList();
-
+        Cow Moana =  farm2.GiveBirth(firstCow.getCowId(), COW_ID_SEQUENCE++, "Moana");
+        farm2.PrintFarmData("First 2 calfs:");
 
         farm2.EndLifeSpan(Nancy.getCowId());
 
-        System.out.println("No Nancy:");
-        farm2.allFarmCows.printList();
+        Cow thirdGeneration1 =  farm2.GiveBirth(Moana.getCowId(), COW_ID_SEQUENCE++, "Joy");
+        Cow thirdGeneration2 =  farm2.GiveBirth(Moana.getCowId(), COW_ID_SEQUENCE++, "Bliss");
+        farm2.PrintFarmData("Bye Nancy");
 
-        Cow thirdGeneration =  farm2.GiveBirth(secondCalf.getCowId(), COW_ID_SEQUENCE++, "Joy");
-        System.out.println("Joy is here:");
-        farm2.allFarmCows.printList();
 
+        farm2.EndLifeSpan(Moana.getCowId());
+        farm2.PrintFarmData("Bye Moana");
+
+        Cow lola =  farm2.GiveBirth(firstCow.getCowId(), COW_ID_SEQUENCE++, "lola");
+        farm2.PrintFarmData("Hi Lola");
+
+        Cow _4G =  farm2.GiveBirth(thirdGeneration1.getCowId(), COW_ID_SEQUENCE++, "Joy V2");
+        farm2.PrintFarmData("4G");
+
+        // will throw IllegalArgumentException - Moana is not alive
+        //Cow parent404 =  farm2.GiveBirth(Moana.getCowId(), COW_ID_SEQUENCE++, "Joy V2");
     }
 
     public Cow GiveBirth(Long parentCowId, Long childCowId, String childNickName){
         Cow calf = new Cow(childCowId,  childNickName, parentCowId);
-        allFarmCows.insert(calf);
+        aliveCows.insert(calf);
+
+        var parentCow = farmTree.findTreeNode(farmTree.getRoot(), c -> c.getCowId().equals(parentCowId));
+        if(parentCow != null && parentCow.getData().isAlive()) {
+            var newCowNode = new TreeNode<>(calf);
+            newCowNode.setParent(parentCow);
+            parentCow.addChild(newCowNode);
+        }
+        else{
+            throw new IllegalArgumentException("No such parent:" + parentCowId);
+        }
         return calf;
     }
-    public void PrintFarmData(){
-        //todo
-        allFarmCows.printList();
+    public void PrintFarmData(String msg){
+        System.out.println(msg);
+        System.out.println(farmTree.print());
     }
     public void EndLifeSpan(Long cowId){
-        allFarmCows.deleteByPredicate(cow -> cow.getCowId().equals(cowId));
+        aliveCows.deleteByPredicate(cow -> cow.getCowId().equals(cowId));
+
+        TreeNode<Cow> cow = farmTree.findTreeNode(farmTree.getRoot(), c -> c.getCowId().equals(cowId));
+        cow.getData().setAlive(false);
     }
 }

@@ -1,21 +1,25 @@
 package diaryfarm.farm.v2;
 
 
+import java.util.Iterator;
 import java.util.function.Predicate;
 
-public class MyLinkedList<T> {
+public class MyLinkedList<T> implements Iterable<T> {
     Node<T> head;
+    private int size = 0;
 
-    static class Node<T> {
-
-        T data;
-        Node<T> next;
-
-        Node(T d) {
-            data = d;
-            next = null;
-        }
+    public int size() {
+        return size;
     }
+
+    public void clear() {
+        head = null;
+    }
+
+    public Node<T> getHead() {
+        return head;
+    }
+
 
     public void insert(T data) {
 
@@ -31,13 +35,16 @@ public class MyLinkedList<T> {
             }
             last.next = node;
         }
+        size++;
     }
+
     //todo Predicate ain;t data structure, so hopefully its allowed :)
     public void deleteByPredicate(Predicate<T> predicate) {
         Node<T> currNode = head, prev = null;
 
-        if (currNode != null &&  predicate.test(currNode.data)) {
+        if (currNode != null && predicate.test(currNode.data)) {
             head = currNode.next;
+            size--;
         }
 
         while (currNode != null && !predicate.test(currNode.data)) {
@@ -46,58 +53,12 @@ public class MyLinkedList<T> {
         }
         if (currNode != null && prev != null) {
             prev.next = currNode.next;
+            size--;
         }
     }
 
 
-    public T deleteByKey(T key) {
-        Node<T> currNode = head, prev = null;
-
-        if (currNode != null && currNode.data == key) {
-            head = currNode.next;
-            return key;
-        }
-
-        while (currNode != null && currNode.data != key) {
-            prev = currNode;
-            currNode = currNode.next;
-        }
-
-        if (currNode != null) {
-            prev.next = currNode.next;
-            System.out.println(key + " found and deleted");
-        }
-
-        if (currNode == null) {
-            System.out.println(key + " not found");
-            return null;
-        }
-
-        return key;
-    }
-
-    public void deleteAtPosition(int index) {
-        Node<T> currNode = head, prev = null;
-        if (index == 0 && currNode != null) {
-            head = currNode.next;
-
-        }
-        int counter = 0;
-        while (currNode != null) {
-
-            if (counter == index) {
-                prev.next = currNode.next;
-                break;
-            } else {
-                prev = currNode;
-                currNode = currNode.next;
-                counter++;
-            }
-        }
-    }
-
-    public void printList()
-    {
+    public void printList() {
         Node<T> currNode = head;
         System.out.print("LinkedList: ");
         while (currNode != null) {
@@ -109,4 +70,48 @@ public class MyLinkedList<T> {
         System.out.println();
     }
 
+    // return Iterator instance
+    public Iterator<T> iterator() {
+        return new ListIterator<T>(this);
+    }
 }
+
+class ListIterator<T> implements Iterator<T> {
+    Node<T> current;
+
+    public ListIterator(MyLinkedList<T> list) {
+        current = list.getHead();
+    }
+
+    public boolean hasNext() {
+        return current != null;
+    }
+    public T next() {
+        T data = current.getData();
+        current = current.getNext();
+        return data;
+    }
+
+    public void remove() {
+        throw new UnsupportedOperationException();
+    }
+}
+
+class Node<T> {
+    T data;
+    Node<T> next;
+
+    Node(T d) {
+        data = d;
+        next = null;
+    }
+
+    public T getData() {
+        return data;
+    }
+
+    public Node<T> getNext() {
+        return next;
+    }
+}
+

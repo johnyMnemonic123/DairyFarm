@@ -2,6 +2,7 @@ package diaryfarm.farm.v1;
 
 import diaryfarm.domain.Cow;
 
+
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -33,6 +34,10 @@ public class Farm {
 
     //fixme this method makes more sense in Cow class from OOP POV
     public Cow GiveBirth(Long parentCowId, Long childCowId, String childNickName){
+        Cow mother = cowMap.get(parentCowId);
+        if(mother == null)
+            throw new IllegalArgumentException("No such parent:" + parentCowId);
+
         Cow calf = new Cow(childCowId,  childNickName, parentCowId);
         allFarmCows.add(calf);
         cowMap.put(childCowId, calf);
