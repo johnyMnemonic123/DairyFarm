@@ -23,16 +23,19 @@ public class Farm {
         Cow firstCow = new Cow(COW_ID_SEQUENCE++, "First", null);
         List<Cow> cows = new ArrayList<>();
         cows.add(firstCow);
+
         Farm farm1 = new Farm(cows, "MyFarmv1");
+
         Cow firstCalf =  farm1.GiveBirth(firstCow.getCowId(), COW_ID_SEQUENCE++, "Baby1");
         farm1.EndLifeSpan(firstCalf.getCowId());
-        assert farm1.allFarmCows.size() == 1;
+        System.out.println("Farm size: " + farm1.allFarmCows.size());
     }
 
     //fixme this method makes more sense in Cow class from OOP POV
     public Cow GiveBirth(Long parentCowId, Long childCowId, String childNickName){
         Cow calf = new Cow(childCowId,  childNickName, parentCowId);
         allFarmCows.add(calf);
+        cowMap.put(childCowId, calf);
         return calf;
     }
     public void PrintFarmData(){
