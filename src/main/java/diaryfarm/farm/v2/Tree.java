@@ -54,19 +54,6 @@ public class Tree<T> {
         return res;
     }
 
-    public TreeNode<T> findTreeNode(TreeNode<T> TreeNode, T toFind) {
-        if (TreeNode == null)
-            return null;
-        if (TreeNode.getData().equals(toFind))
-            return TreeNode;
-        else {
-            TreeNode<T> cTreeNode = null;
-            for (TreeNode<T> child : TreeNode.getChildren())
-                if ((cTreeNode = findTreeNode(child, toFind)) != null)
-                    return cTreeNode;
-        }
-        return null;
-    }
     public TreeNode<T> findTreeNode(TreeNode<T> TreeNode, Predicate<T> toFind) {
         if (TreeNode == null)
             return null;

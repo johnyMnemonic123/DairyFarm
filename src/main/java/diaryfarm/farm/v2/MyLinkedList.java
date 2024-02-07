@@ -70,7 +70,6 @@ public class MyLinkedList<T> implements Iterable<T> {
         System.out.println();
     }
 
-    // return Iterator instance
     public Iterator<T> iterator() {
         return new ListIterator<T>(this);
     }
